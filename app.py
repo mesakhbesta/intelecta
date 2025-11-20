@@ -7,9 +7,9 @@ import os
 # ------------------------------
 # Load model & preprocessing
 # ------------------------------
-scaler = joblib.load(r"scaler.joblib")
-label_encoder = joblib.load(r"label_encoder.joblib")
-model = joblib.load(r"xgb_model.joblib")
+scaler = joblib.load("scaler.joblib")
+label_encoder = joblib.load("label_encoder.joblib")
+model = joblib.load("xgb_model.joblib")
 
 # ------------------------------
 # Feature extraction function
@@ -116,8 +116,16 @@ if file_paths and st.button("🔮 Predict", key="predict_button"):
             features_scaled = scaler.transform([features])
             pred = model.predict(features_scaled)
             species = label_encoder.inverse_transform(pred)[0]
-            
+
+            # Ambil probabilitas prediksi untuk confidence
+            if hasattr(model, "predict_proba"):
+                proba = model.predict_proba(features_scaled)
+                confidence = np.max(proba) * 100  # dalam persen
+            else:
+                confidence = None
+
             # Card-style prediction responsif dengan clamp font
+            confidence_text = f"{confidence:.2f}%" if confidence is not None else "N/A"
             st.markdown(f"""
             <div style="
                 padding: clamp(10px,2vw,20px); 
@@ -128,9 +136,9 @@ if file_paths and st.button("🔮 Predict", key="predict_button"):
             ">
                 <h4 style="color:#00b4d8; margin-bottom:0.5vw; font-size: clamp(14px, 3vw, 24px);">🎯 File: {os.path.basename(path)}</h4>
                 <h2 style="color:#caf0f8; margin-top:0; font-size: clamp(18px, 5vw, 36px);">Predicted Species: {species}</h2>
+                <p style="color:#90e0ef; font-size: clamp(14px, 2.5vw, 20px); margin:0;">Confidence: {confidence_text}</p>
             </div>
             """, unsafe_allow_html=True)
 
         except Exception as e:
             st.error(f"⚠ Terjadi error saat memproses {os.path.basename(path)}: {e}")
-

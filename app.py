@@ -7,9 +7,9 @@ import os
 # ------------------------------
 # Load model & preprocessing
 # ------------------------------
-scaler = joblib.load(r"E:\DOWNLOAD\scaler.joblib")
-label_encoder = joblib.load(r"E:\DOWNLOAD\label_encoder.joblib")
-model = joblib.load(r"E:\DOWNLOAD\xgb_model.joblib")
+scaler = joblib.load(r"scaler.joblib")
+label_encoder = joblib.load(r"label_encoder.joblib")
+model = joblib.load(r"xgb_model.joblib")
 
 # ------------------------------
 # Feature extraction function
@@ -84,7 +84,7 @@ uploaded_files = st.file_uploader(
 # ------------------------------
 # Sample audio
 # ------------------------------
-sample_folder = r"E:\DOWNLOAD\Intelecta\decoded_audio\Cek"
+sample_folder = "sample"
 sample_files = [f for f in os.listdir(sample_folder) if f.endswith((".wav",".mp3",".ogg"))]
 st.markdown("<h4 style='font-size: clamp(16px, 3vw, 24px);'>📂 Sample Audio</h4>", unsafe_allow_html=True)
 sample_selection = st.multiselect("Pilih satu atau beberapa sample audio:", sample_files)
@@ -133,3 +133,4 @@ if file_paths and st.button("🔮 Predict", key="predict_button"):
 
         except Exception as e:
             st.error(f"⚠ Terjadi error saat memproses {os.path.basename(path)}: {e}")
+
